@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doss Documentation</title>
+    <style>
+        :root {
+            --primary-color: #ec1b10;
+            --background-color: #d9d9d9;
+            --text-color: #1f1e1e;
+            --sidebar-background: #b9b9b9;
+            --faizan-color: #ffffff;
+            --sidebar-width: 250px;
+            --nav-height: 60px;
+            --button-color: #c70a0a;
+            --button-hover-color: #45a049;
+        }
+
+        .dark-mode {
+            --primary-color: #d80e00;
+            --background-color: #1a1a1a;
+            --text-color: #f0f0f0;
+            --sidebar-background: #2a2a2a;
+            --faizan-color: #000;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            line-height: 1.6;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            height: calc(100vh - var(--nav-height));
+            position: fixed;
+            top: var(--nav-height);
+            left: 0;
+            background-color: var(--sidebar-background);
+            padding: 30px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: var(--sidebar-background);
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .nav-links {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .nav-links li {
+            margin-bottom: 10px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            margin-top: var(--nav-height);
+            padding: 40px;
+            max-width: 800px;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+        }
+
+        code {
+            background-color: #3f3d3d;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .search-results {
+            margin-top: 20px;
+        }
+
+        .search-result {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: var(--sidebar-background);
+            border-radius: 4px;
+        }
+
+        .search-result h3 {
+            margin: 0 0 5px 0;
+        }
+
+        .search-result p {
+            margin: 0;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--nav-height);
+            background-color: var(--faizan-color);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .navbar-topic {
+            color: var(--text-color);
+            font-size: 25px;
+            font-weight: 600;
+            margin: 0 0 0 20px;
+        }
+
+        .navbar-buttons {
+            margin-left: auto;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            background-color: transparent;
+            border: 1px solid var(--faizan-color);
+            color: var(--text-color);
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn:hover {
+            background-color: var(--background-color);
+            color: var(--primary-color);
+        }
+
+        .btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+        }
+
+        #search-input {
+            display: none;
+            width: 0;
+            padding: 5px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: width 0.3s ease-in-out;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        #search-input.active {
+            display: block;
+            width: 200px;
+            margin-right: 10px;
+        }
+
+        .breadcrumbs {
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .breadcrumbs a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .breadcrumbs a:hover {
+            text-decoration: underline;
+        }
+
+        /* New styles for Notes page */
+        .notes-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .note-item {
+            background-color: var(--sidebar-background);
+            border-radius: 4px;
+            padding: 15px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .note-item:hover {
+            background-color: var(--primary-color);
+            color: var(--background-color);
+        }
+
+        .note-item h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+
+        .note-item p {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 5px 10px;
+            background-color: var(--primary-color);
+            color: var(--background-color);
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .back-button:hover {
+            background-color: var(--background-color);
+            color: var(--primary-color);
+        }
+
+        .drive-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .drive-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .upload-btn {
+            background-color: var(--primary-color);
+            color: var(--background-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .upload-btn:hover {
+            opacity: 0.9;
+        }
+
+        .file-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .file-item {
+            background-color: var(--sidebar-background);
+            border-radius: 4px;
+            padding: 15px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .file-item:hover {
+            background-color: var(--primary-color);
+            color: var(--background-color);
+        }
+
+        .file-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .file-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .file-info {
+            font-size: 12px;
+            color: var(--text-color);
+        }
+
+        .folder-structure {
+            margin-bottom: 20px;
+        }
+
+        .folder {
+            margin-bottom: 10px;
+        }
+
+        .folder-name {
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .folder-content {
+            margin-left: 20px;
+            display: none;
+        }
+
+        .folder.open .folder-content {
+            display: block;
+        }
+        .imageaws1{
+            width: 800px;
+        }
+        .python-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .code-example {
+            margin-bottom: 40px;
+            background: var(--sidebar-background);
+            border-radius: 8px;
+            padding: 20px;
+            background-color: var(--sidebar-background);
+
+
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        .code-block pre {
+            margin: 0;
+            color: #fff;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .code-block code {
+            color: #fff;
+            background: transparent;
+            padding: 0;
+        }
+
+        .explanation {
+            margin-top: 15px;
+        }
+
+        .explanation p {
+            margin-top: 0;
+        }
+
+        .explanation ul {
+            margin-top: 10px;
+        }
+
+        .explanation li {
+            margin-bottom: 5px;
+        }
+
+        .explanation code {
+            background: #1e1e1e;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .note {
+            background: rgba(255, 65, 7, 0.1);
+            border-left: 4px solid #fd2323;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+        }
+
+        .note p {
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        .note strong {
+            color:var(--primary-color);
+        }
+        .warning-note {
+            background: rgba(255, 87, 34, 0.1);
+            border-left: 4px solid #ff5722;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .warning-note p {
+            margin: 0;
+            color: var(--text-color);
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: var(--primary-color);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="number"] {
+            width: 100px;
+            padding: 5px;
+            border: 1px solid var(--sidebar-background);
+            border-radius: 4px;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid var(--sidebar-background);
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--sidebar-background);
+        }
+
+        button {
+            background-color: var(--button-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: var(--button-hover-color);
+        }
+
+
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="#" class="navbar-brand" id="refresh-link">
+            <img src="https://media.licdn.com/dms/image/v2/D4E0BAQHrIyFNvHS6Uw/company-logo_200_200/company-logo_200_200/0/1716388167511/doss_in_logo?e=1740009600&v=beta&t=uHuD0vAGPG1gei7bbekzuvDYJOidBKPA684fG6BC-jc" alt="" class="navbar-logo">
+            DOSS MEDIATECH
+        </a>
+        <h1 class="navbar-topic">documentation</h1>
+        <div class="navbar-buttons">
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search documentation...">
+                <button id="search-toggle" class="btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <span class="sr-only">Search</span>
+                </button>
+            </div>
+            <button id="theme-toggle" class="btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+                <span class="sr-only">Toggle Theme</span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="sidebar">
+        <ul class="nav-links">
+            <li><a href="#" data-page="home">Home</a></li>
+            <li><a href="#" data-page="pythonarth">python operator</a></li>
+            <li><a href="#" data-page="python">python day 1</a></li>
+            <li><a href="#" data-page="python2">python day 2</a></li>
+            <li><a href="#" data-page="AWS-storage-gateway">AWS storage gateway</a></li>
+            <li><a href="#" data-page="notes">Notes</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="breadcrumbs" id="breadcrumbs"></div>
+        <div id="content">
+            <h1>Welcome to Python Documentation</h1>
+            <p>Python is a high-level, interpreted programming language known for its simplicity and readability. It enables developers to create a wide range of applications, from web development to data analysis and artificial intelligence.</p>
+            <h2>Key Features</h2>
+            <ul>
+                <li><strong>Easy to Learn:</strong> Python has a simple and intuitive syntax, making it an excellent choice for beginners.</li>
+                <li><strong>Versatile:</strong> Python can be used for various purposes, including web development, scientific computing, and artificial intelligence.</li>
+                <li><strong>Large Standard Library:</strong> Python comes with a comprehensive standard library, reducing the need for external dependencies.</li>
+                <li><strong>Cross-platform:</strong> Python runs on multiple platforms, including Windows, macOS, and Linux.</li>
+            </ul>
+            <h2>Getting Started</h2>
+            <p>To get started with Python, visit the <a href="#" data-page="getting-started">Getting Started</a> page for installation instructions and basic tutorials.</p>
+        </div>
+        <div id="search-results" class="search-results"></div>
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('search-input');
+        const content = document.getElementById('content');
+        const searchResults = document.getElementById('search-results');
+        const themeToggle = document.getElementById('theme-toggle');
+        const searchToggle = document.getElementById('search-toggle');
+        const breadcrumbs = document.getElementById('breadcrumbs');
+
+        // Theme toggle functionality
+        themeToggle.addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDarkMode);
+            updateThemeToggleIcon();
+        });
+
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('darkMode');
+        if (savedTheme === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+        updateThemeToggleIcon();
+
+        // Search toggle functionality
+        searchToggle.addEventListener('click', function() {
+            searchInput.classList.toggle('active');
+            if (searchInput.classList.contains('active')) {
+                searchInput.focus();
+                searchToggle.style.display = 'none';
+            } else {
+                searchInput.value = '';
+                content.style.display = 'block';
+                searchResults.style.display = 'none';
+                searchToggle.style.display = 'flex';
+            }
+        });
+
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            if (searchTerm.length < 3) {
+                content.style.display = 'block';
+                searchResults.style.display = 'none';
+                return;
+            }
+
+            const headings = content.querySelectorAll('h1, h2, h3, h4, h5, h6');
+            const results = [];
+
+            headings.forEach(heading => {
+                const headingText = heading.textContent.toLowerCase();
+                if (headingText.includes(searchTerm)) {
+                    const nextElement = heading.nextElementSibling;
+                    const description = nextElement && nextElement.tagName !== 'H1' && nextElement.tagName !== 'H2' && nextElement.tagName !== 'H3' ? nextElement.textContent : '';
+                    results.push({ title: heading.textContent, description: description });
+                }
+            });
+
+            displaySearchResults(results);
+        });
+
+        function displaySearchResults(results) {
+            if (results.length === 0) {
+                content.style.display = 'block';
+                searchResults.style.display = 'none';
+                return;
+            }
+
+            content.style.display = 'none';
+            searchResults.style.display = 'block';
+            searchResults.innerHTML = '';
+
+            results.forEach(result => {
+                const resultElement = document.createElement('div');
+                resultElement.classList.add('search-result');
+                resultElement.innerHTML = `
+                    <h3>${result.title}</h3>
+                    <p>${result.description}</p>
+                `;
+                searchResults.appendChild(resultElement);
+            });
+        }
+
+        function updateThemeToggleIcon() {
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            themeToggle.innerHTML = isDarkMode
+                ? '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg><span class="sr-only">Light Mode</span>'
+                : '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg><span class="sr-only">Dark Mode</span>';
+        }
+
+        // Navigation and breadcrumbs
+        const navLinks = document.querySelectorAll('.nav-links a');
+        const pages = {
+            'home': {
+                title: 'Home',
+                next: 'python',
+                content: `
+                    <h1>Welcome to Python Documentation</h1>
+                    <p>Python is a high-level, interpreted programming language known for its simplicity and readability. It enables developers to create a wide range of applications, from web development to data analysis and artificial intelligence.</p>
+                    <h2>Key Features</h2>
+                    <ul>
+                        <li><strong>Easy to Learn:</strong> Python has a simple and intuitive syntax, making it an excellent choice for beginners.</li>
+                        <li><strong>Versatile:</strong> Python can be used for various purposes, including web development, scientific computing, and artificial intelligence.</li>
+                        <li><strong>Large Standard Library:</strong> Python comes with a comprehensive standard library, reducing the need for external dependencies.</li>
+                        <li><strong>Cross-platform:</strong> Python runs on multiple platforms, including Windows, macOS, and Linux.</li>
+                    </ul>
+                    <h2>Getting Started</h2>
+                    <p>To get started with Python, visit the <a href="#" data-page="getting-started">Getting Started</a> page for installation instructions and basic tutorials.</p>
+                
+                    <h1>Getting Started with Python</h1>
+                    <p>This guide will help you install Python and set up your development environment.</p>
+                    <h2>Installing Python</h2>
+                    <ol>
+                        <li>Visit the official Python website at <a href="https://www.python.org/downloads/" target="_blank">python.org</a>.</li>
+                        <li>Download the latest version of Python for your operating system.</li>
+                        <li>Run the installer and follow the installation wizard.</li>
+                        <li>Make sure to check the box that says "Add Python to PATH" during installation.</li>
+                    </ol>
+                    <h2>Verifying Installation</h2>
+                    <p>Open a command prompt or terminal and type:</p>
+                    <code>python --version</code>
+                    <p>This should display the installed Python version.</p>
+                    <h2>Writing Your First Python Program</h2>
+                    <p>Create a new file called <code>hello.py</code> and add the following code:</p>
+                    <code>
+                    print("Hello, World!")
+                    </code>
+                    <p>Run the program by typing:</p>
+                    <code>python hello.py</code>
+                    <p>You should see "Hello, World!" printed to the console.</p>
+                     <h1>Key Concepts in Python</h1>
+                    <p>Understanding these fundamental concepts will help you become proficient in Python programming:</p>
+                    <h2>1. Variables and Data Types</h2>
+                    <p>Python has several built-in data types, including:</p>
+                    <ul>
+                        <li>Integers (int)</li>
+                        <li>Floating-point numbers (float)</li>
+                        <li>Strings (str)</li>
+                        <li>Booleans (bool)</li>
+                        <li>Lists</li>
+                        <li>Tuples</li>
+                        <li>Dictionaries</li>
+                    </ul>
+                    <h2>2. Control Flow</h2>
+                    <p>Python uses indentation to define code blocks. Key control flow statements include:</p>
+                    <ul>
+                        <li>if, elif, else</li>
+                        <li>for loops</li>
+                        <li>while loops</li>
+                    </ul>
+                    <h2>3. Functions</h2>
+                    <p>Functions are defined using the <code>def</code> keyword. They can take parameters and return values.</p>
+                    <h2>4. Object-Oriented Programming</h2>
+                    <p>Python supports object-oriented programming with classes and objects.</p>
+                    <h2>5. Modules and Packages</h2>
+                    <p>Python's functionality can be extended using modules and packages from the standard library or third-party sources.</p>
+                    
+                    <h1>Python Modules</h1>
+                    <p>Modules in Python are files containing Python definitions and statements. They allow you to organize and reuse code.</p>
+                    <h2>Importing Modules</h2>
+                    <p>You can import modules using the <code>import</code> statement:</p>
+                    <code>import math</code>
+                    <p>Or import specific functions:</p>
+                    <code>from math import sqrt</code>
+                    <h2>Common Built-in Modules</h2>
+                    <ul>
+                        <li><strong>os</strong>: Provides functions for interacting with the operating system</li>
+                        <li><strong>sys</strong>: Provides access to some variables used or maintained by the Python interpreter</li>
+                        <li><strong>math</strong>: Provides mathematical functions</li>
+                        <li><strong>datetime</strong>: Supplies classes for working with dates and times</li>
+                        <li><strong>random</strong>: Implements pseudo-random number generators</li>
+                    </ul>
+                    <h2>Creating Your Own Modules</h2>
+                    <p>You can create your own modules by saving Python code in a .py file. For example, if you have a file named <code>mymodule.py</code>, you can import it using:</p>
+                    <code>import mymodule</code>
+
+                     <h1>Python Integrations</h1>
+                    <p>Python can be integrated with various tools and technologies to enhance its capabilities:</p>
+                    <h2>1. Web Frameworks</h2>
+                    <ul>
+                        <li>Django: A high-level web framework for rapid development</li>
+                        <li>Flask: A lightweight WSGI web application framework</li>
+                        <li>FastAPI: A modern, fast web framework for building APIs</li>
+                    </ul>
+                    <h2>2. Data Science and Machine Learning</h2>
+                    <ul>
+                        <li>NumPy: Fundamental package for scientific computing</li>
+                        <li>Pandas: Data manipulation and analysis library</li>
+                        <li>Scikit-learn: Machine learning library</li>
+                        <li>TensorFlow and PyTorch: Deep learning frameworks</li>
+                    </ul>
+                    <h2>3. Database Integrations</h2>
+                    <ul>
+                        <li>SQLAlchemy: SQL toolkit and Object-Relational Mapping (ORM) library</li>
+                        <li>psycopg2: PostgreSQL adapter</li>
+                        <li>pymongo: MongoDB driver</li>
+                    </ul>
+                    <h2>4. GUI Development</h2>
+                    <ul>
+                        <li>Tkinter: Standard GUI library for Python</li>
+                        <li>PyQt: Set of Python bindings for the Qt application framework</li>
+                    </ul>
+                    <h2>5. Testing Frameworks</h2>
+                    <ul>
+                        <li>pytest: Testing framework</li>
+                        <li>unittest: Built-in unit testing framework</li>
+                    </ul>
+                    <h1>Python Use Cases</h1>
+                    <p>Python's versatility makes it suitable for a wide range of applications:</p>
+                    <h2>1. Web Development</h2>
+                    <p>Python is widely used for backend web development, powering websites and web applications.</p>
+                    <h2>2. Data Science and Machine Learning</h2>
+                    <p>Python's rich ecosystem of libraries makes it a popular choice for data analysis, visualization, and machine learning projects.</p>
+                    <h2>3. Automation and Scripting</h2>
+                    <p>Python's simplicity makes it ideal for automating repetitive tasks and writing system scripts.</p>
+                    <h2>4. Scientific Computing</h2>
+                    <p>Python is used in scientific research for data processing, simulation, and visualization.</p>
+                    <h2>5. Artificial Intelligence</h2>
+                    <p>Many AI applications and research projects are implemented using Python.</p>
+                    <h2>6. Game Development</h2>
+                    <p>Python can be used to create games, especially with libraries like Pygame.</p>
+                    <h2>7. Finance and Trading</h2>
+                    <p>Python is used for quantitative and qualitative financial analysis, as well as algorithmic trading.</p>
+                    <h2>8. Education</h2>
+                    <p>Python's readability makes it an excellent language for teaching programming concepts.</p>
+                    `
+            },
+            'pythonarth': {
+                title: 'python operator',
+                prev: 'home',
+                next: 'python',
+                content: `                        
+                    `
+            },
+            'python': {
+                title: 'python day 1',
+                prev: 'home',
+                next: 'python2',
+                content: `
+                 <h1>In Python day 1, Variables and Data Types
+                     </h1>
+                <img src="https://scontent.flko9-2.fna.fbcdn.net/v/t39.30808-6/467748937_1225612508664817_2622591441044906851_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=127cfc&_nc_ohc=hBtt2r3W9PgQ7kNvgGbWJvt&_nc_zt=23&_nc_ht=scontent.flko9-2.fna&_nc_gid=Awc_6Uabv0k5aBuKaqRzQQO&oh=00_AYBJnBSgC7pIPZoee4xuyjY5zC72UQnanqqPRAEerLtPuQ&oe=67415E3A" alt="AWS Storage Gateway Key Features">
+
+                <div class="code-example">
+                <h2>Basic Variable Assignment</h2>
+                 <div class="code-block">
+                     <pre><code>x = 2
+
+y = 4
+
+print(x)  # Output: 2
+print(y)  # Output: 4</code></pre>
+        </div>
+        <div class="explanation">
+            <p>In Python, variables are created through simple assignment using the = operator. The data type is automatically inferred:</p>
+            <ul>
+                <li><code>x</code> is assigned an integer value of 2</li>
+                <li><code>y</code> is assigned an integer value of 4</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="code-example">
+        <h2>Different Data Types</h2>
+        <div class="code-block">
+            <pre><code> a = "python str data type"  # String
+
+ b = 1.3                    # Float
+
+ c = a, b                   # Tuple
+
+print(type(a))  # Output: &lt;class 'str'&gt;
+print(type(b))  # Output: &lt;class 'float'&gt;
+print(type(c))  # Output: &lt;class 'tuple'&gt;</code></pre>
+        </div>
+        <div class="explanation">
+            <p>Python supports various data types:</p>
+            <ul>
+                <li><strong>String (str)</strong>: Text data enclosed in quotes</li>
+                <li><strong>Float</strong>: Decimal numbers</li>
+                <li><strong>Tuple</strong>: Immutable sequence of values</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="code-example">
+        <h2>Memory Management and ID</h2>
+        <div class="code-block">
+            <pre><code>print(id(x))  
+
+# Every variable stores their data or value in ram with a unique identifier</code></pre>
+        </div>
+        <div class="explanation">
+            <p>The <code>id()</code> function returns the memory address of an object:</p>
+            <ul>
+                <li>Every object in Python has a unique identifier</li>
+                <li>The ID remains constant throughout the lifetime of the object</li>
+                <li>Different variables may have the same ID if they reference the same object</li>
+            </ul>
+        </div>
+    </div>
+                   <img src="https://scontent.flko9-1.fna.fbcdn.net/v/t39.30808-6/467706121_1225707025322032_5576923721553343005_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=127cfc&_nc_ohc=lCMo3HoQUE0Q7kNvgHW1oxL&_nc_zt=23&_nc_ht=scontent.flko9-1.fna&_nc_gid=A19c-fe6ykiIE7HcFRseUWF&oh=00_AYDTKvhcTmILH6jeVFk-HE_aIgIaLQ5Oxhef_edQ-ru7Ag&oe=674182D6" alt="AWS Storage Gateway Key Features">
+
+                       <div class="code-example">
+        <h2>Python Package Management</h2>
+        <div class="warning-note">
+            <p><strong>Note:</strong> You may need to restart the kernel to use updated packages.</p>
+        </div>
+        <div class="code-block">
+            <pre><code># Install PyWhatKit package using pip
+pip install pywhatkit
+
+# Import the package with an alias
+import pywhatkit as pyw
+
+# Use the search function
+pyw.search("death note")</code></pre>
+        </div>
+        <div class="explanation">
+            <p>Python's package management system (pip) allows you to install and manage external libraries:</p>
+            <ul>
+                <li><strong>Package Installation</strong>: Use pip install command to add new packages</li>
+                <li><strong>Import Aliases</strong>: Use 'as' keyword to create shorter names for imported modules</li>
+                <li><strong>Package Usage</strong>: Access package functions using dot notation</li>
+            </ul>
+            <div class="note">
+                <p><strong>About PyWhatKit:</strong></p>
+                <ul>
+                    <li>PyWhatKit is a Python library for various automation tasks</li>
+                    <li>Provides functions for web searches, WhatsApp automation, and more</li>
+                    <li>Documentation available on PyPi website</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+             
+    <div class="code-example">
+        <h2>Common Package Management Commands</h2>
+        <div class="command-grid">
+            <div class="command-card">
+                <h3>pip install</h3>
+                <div class="code-block">
+                    <pre><code>pip install package_name</code></pre>
+                </div>
+                <p>Installs a new Python package</p>
+            </div>
+            <div class="command-card">
+                <h3>pip uninstall</h3>
+                <div class="code-block">
+                    <pre><code>pip uninstall package_name</code></pre>
+                </div>
+                <p>Removes an installed package</p>
+            </div>
+            <div class="command-card">
+                <h3>pip list</h3>
+                <div class="code-block">
+                    <pre><code>pip list</code></pre>
+                </div>
+                <p>Shows all installed packages</p>
+            </div>
+        </div>
+    </div> 
+                    `
+            },
+            'python2': {
+                title: 'python day 2',
+                prev: 'python',
+                next: 'AWS-storage-gateway',
+                content: `
+                 <h1>In Python, day 2
+                     </h1>
+                <img src="https://scontent.flko9-2.fna.fbcdn.net/v/t39.30808-6/467738880_1225671565325578_8211058130054381835_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=127cfc&_nc_ohc=Hp0E5I5lwAAQ7kNvgHt8Hho&_nc_zt=23&_nc_ht=scontent.flko9-2.fna&_nc_gid=Aegf_aVzj-_68zQM6tloReT&oh=00_AYAV3oGQCGa1IzUpoye7qP7T-IL1ZLJ0-l7st0va8dPN7g&oe=67417E0F" alt="AWS Storage Gateway Key Features">
+
+                      <div class="code-example">
+        <h2>String Operations and Concatenation</h2>
+        <div class="code-block">
+            <pre><code> y = "faizan"
+ 
+ x = "mohd"
+ 
+ x + y           # String concatenation
+
+ print(x + y)    # Output: mohdfaizan
+
+
+ z = x + y       # Store concatenated result
+
+ print(type(z))  # Output: &lt;class 'str'&gt;</code></pre>
+        </div>
+        <div class="explanation">
+            <p>Python provides powerful string manipulation capabilities:</p>
+            <ul>
+                <li><strong>String Assignment</strong>: Strings can be assigned to variables using quotes</li>
+                <li><strong>Concatenation</strong>: The + operator joins strings together</li>
+                <li><strong>Type Checking</strong>: The type() function confirms the data type is 'str'</li>
+            </ul>
+            <div class="note">
+                <p><strong>Note:</strong> String concatenation creates a new string object in memory.</p>
+            </div>
+        </div>
+    </div>
+                   
+                <img src="https://scontent.flko9-1.fna.fbcdn.net/v/t39.30808-6/467747093_1225675795325155_2840955229239576559_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=127cfc&_nc_ohc=pvSpqcEWLvAQ7kNvgGto3yf&_nc_zt=23&_nc_ht=scontent.flko9-1.fna&_nc_gid=Am-WE_3ccRd36mJlE32b2dM&oh=00_AYC925PPa_orr4Dk0XFdmfj0V_7xR3QQt3ql-3moFqqgCg&oe=6741803D" alt="AWS Storage Gateway Key Features">
+  
+    <div class="code-example">
+        <h2>List Operations in Python (CRUD)</h2>
+        <div class="code-block">
+            <pre><code># Create a list of friends
+
+myFriends = ["mr.a", "mr.b", "mr.c", "mr.d"]
+print(myFriends)  # Output: ['mr.a', 'mr.b', 'mr.c', 'mr.d']
+</div>
+<div class="code-block">
+    <pre><code># Remove an element
+
+myFriends.remove("mr.d")
+print(myFriends)  # Output: ['mr.a', 'mr.b', 'mr.c']
+
+</div>
+        <div class="code-block">
+            <pre><code># Create a list with numbers
+
+list1 = [123, "123"]
+print(type(list1))  # Output: &lt;class 'list'&gt;
+print(len(list1))   # Output: 2
+
+</div>
+        <div class="code-block">
+            <pre><code># Create a longer list
+
+list2 = ["mr.a", "mr.a", "mr.a", "mr.a", "mr.a", "mr.a", "mr.a", "mr.a"]
+print(len(list2))   # Output: 8
+
+</div>
+        <div class="code-block">
+            <pre><code># List indexing and type conversion
+
+print(list1[1])     # Output: '123' (string)
+print(list1[0])     # Output: 123 (integer)
+
+</div>
+        <div class="code-block">
+            <pre><code># Append to list
+
+list1.append(1)
+print(list1)        # Output: [123, '123', 1]</code></pre>
+        </div>
+        <div class="explanation">
+            <p>Python lists are versatile data structures that support CRUD operations (Create, Read, Update, Delete):</p>
+            <ul>
+                <li><strong>Create</strong>: Lists are created using square brackets []</li>
+                <li><strong>Read</strong>: Access elements using index (e.g., list1[0])</li>
+                <li><strong>Update</strong>: Modify elements directly or using methods like append()</li>
+                <li><strong>Delete</strong>: Remove elements using the remove() method</li>
+            </ul>
+            <div class="note">
+                <p><strong>Key Points:</strong></p>
+                <ul>
+                    <li>Lists can contain mixed data types (numbers, strings, etc.)</li>
+                    <li>List indices start at 0</li>
+                    <li>len() function returns the number of elements in a list</li>
+                    <li>append() adds an element to the end of the list</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="code-example">
+        <h2>List Methods and Properties</h2>
+                <h3>append()</h3>
+                <p>Adds an element to the end of the list</p>
+                <div class="code-block">
+                    <pre><code>list1.append(1)  # Adds 1 to the end</code></pre>
+                </div>
+            
+                <h3>remove()</h3>
+                <p>Removes the first occurrence of a specified value</p>
+                <div class="code-block">
+                    <pre><code>myFriends.remove("mr.d")  # Removes "mr.d"</code></pre>
+                </div>
+            
+                <h3>len()</h3>
+                <p>Returns the number of elements in the list</p>
+                <div class="code-block">
+                    <pre><code>len(myFriends)  # Returns list length</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+   `
+            },
+            
+            'AWS-storage-gateway': {
+                title: 'AWS-storage-gateway',
+                prev: 'getting-started',
+                next: 'notes',
+                content: `
+
+                <h1>Introducing AWS Storage Gateway</h1>
+                <img src="https://digitalcloud.training/wp-content/uploads/2022/01/AWS-Storage-Gateway.jpg?update_image_id_1689047180?height=150&width=300" alt="AWS Storage Gateway Overview">
+                <p>The AWS Storage Gateway service links on-premises software appliances with cloud storage, ensuring a smooth and secure connection to AWS's cloud storage infrastructure. It's a hybrid cloud storage solution that extends on-premises storage capabilities into the cloud, allowing for nearly limitless storage space. The service simplifies storage management and cuts costs for essential hybrid cloud storage scenarios, such as transferring backups to the cloud, utilizing on-premises file shares supported by cloud storage, and accessing data in AWS with minimal delay for on-premises applications.</p>
+                <p>To support these use cases, the service provides four different types of gateways — Tape Gateway, Amazon S3 File Gateway, Amazon FSx File Gateway, and Volume Gateway that seamlessly connect on-premises applications to cloud storage, caching data locally for low-latency access.</p>
+
+                <h2>Key Features</h2>
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/XXQNXwx8nfE?si=9sl3aWVb1nkhBQOf" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <h3>Overview</h3>
+                <p>Storage Gateway offers a quick and straightforward setup, allowing seamless integration with your current setups and easy access to AWS Storage. It delivers a uniform management experience through the AWS Management Console, covering both on-premises gateways and AWS services like Amazon CloudWatch, AWS CloudTrail, IAM, and KMS for monitoring, managing, and securing your data. It's designed to help you cut costs and minimize the hassles of scaling and maintaining on-premises storage solutions.</p>
+
+                <h3>Standard Storage Protocols</h3>
+                <p>Storage Gateway enables seamless integration with your on-premises production or backup systems through NFS, SMB, iSCSI, or iSCSI-VTL, facilitating an effortless shift to AWS Cloud storage without modifying existing applications. It provides protocol conversion and device emulation, allowing access to block data on volumes managed by Storage Gateway via Amazon S3, file storage as native S3 objects, or within fully managed cloud file shares via Amazon FSx for Windows File Server. It also supports virtual tape backups stored online in a virtual tape library backed by S3, or archived in Amazon S3 Glacier and Amazon S3 Glacier Deep Archive tiers.</p>
+
+                <h3>Fully Managed Cache</h3>
+                <img src="/placeholder.svg?height=150&width=300" alt="AWS Storage Gateway Key Features">
+                <p>The local gateway appliance maintains a cache of recently written or read data so your applications can have low-latency access to data that is stored durably in AWS. The gateways use a read-through and write-back cache, committing data locally, acknowledging the write operations, and then asynchronously copying data to AWS, reducing application latency.</p>
+
+                <h3>Optimized and Secure Data Transfer</h3>
+                <img src="/placeholder.svg?height=150&width=300" alt="AWS Storage Gateway Key Features">
+                <p>AWS Storage Gateway ensures the secure transfer of your data, offering SSL encryption for data in transit between your gateway appliance and AWS. It provides comprehensive protection for customer data, from the enterprise network to AWS storage. The service includes robust security features, access controls, and compliances, addressing the security needs of enterprise customers. It also provides FIPS 140-2 compliant endpoints within AWS GovCloud regions.</p>
+
+                <h3>High Availability on VMware</h3>
+                <img src="/placeholder.svg?height=150&width=300" alt="AWS Storage Gateway Key Features">
+                <p>The AWS Storage Gateway ensures high availability within VMware environments by utilizing health checks in conjunction with VMware vSphere High Availability (VMware HA). This setup enables the Storage Gateway to swiftly recover from the majority of service interruptions—typically in less than 60 seconds—whether it's implemented on-premises or in the VMware Cloud on AWS. It safeguards storage operations from a range of issues, including hardware, hypervisor, and network failures, as well as storage and software errors like connection timeouts and inaccessible file shares or volumes.</p>
+
+                <h2>Gateway Types</h2>
+                <img src="https://d2908q01vomqb2.cloudfront.net/e1822db470e60d090affd0956d743cb0e7cdf113/2020/05/04/SGW-family.png?" alt="AWS Storage Gateway Types"  class="imageaws1">
+                
+                <h3>Amazon S3 File Gateway</h3>
+                <img src="https://d2908q01vomqb2.cloudfront.net/e1822db470e60d090affd0956d743cb0e7cdf113/2020/08/31/File-Gateway-store-and-access-objects-in-Amazon-S3-from-file-based-applications-with-local-caching.png?" alt="AWS Storage Gateway Key Features"  class="imageaws1">
+                <p>The Amazon S3 File Gateway offers a file-based interface, allowing the storage of files as S3 objects via NFS and SMB protocols. Files can be accessed through NFS and SMB from a data center or Amazon EC2, or directly as S3 objects. It preserves POSIX metadata in S3's user-metadata. Once in S3, objects can be handled as typical S3 objects, with bucket policies like lifecycle management and Cross-Region Replication applicable. The gateway also logs SMB file share activities to Amazon CloudWatch for auditing.</p>
+                <p>Amazon S3 File Gateway is useful for backing up local file data to S3, including databases like Microsoft SQL Server and Oracle, and supports hybrid cloud workflows, enabling local data to be used by AWS services for tasks like machine learning and analytics.</p>
+
+                <h3>Tape Gateway</h3>
+                <img src="https://d1.awsstatic.com/cloud-storage/tape-gateway-diagram.4b6ca2b4e3f97d4df7988544400ae91424503248.png?" alt="AWS Storage Gateway Key Features"  class="imageaws1">
+                <p>Tape Gateway offers a virtual tape library (VTL) with iSCSI-based virtual tape drives and media changers for on-premises backup applications. It supports most leading backup applications, allowing continuation of tape-based backup processes. Virtual tapes are stored in Amazon S3, with automatic creation of new tapes, easing management and AWS integration.</p>
+                <p>The VTL interface reduces costs related to physical tape infrastructure, maintenance contracts, and media. Costs are based on used capacity, with scalability for growing needs. For large-scale data migration, AWS Snowball Edge Storage Optimized devices can transfer physical tape data to S3 Glacier, optimizing long-term storage expenses. Virtual tapes in AWS are accessible via Tape Gateway, either in AWS or locally, eliminating the need for offsite storage and manual media migration.</p>
+
+                <h3>Volume Gateway</h3>
+                <img src="https://d1.awsstatic.com/cloud-storage/volume-gateway-diagram.eedd58ab3fb8a5dcae088622b5c1595dac21a04b.png?" alt="AWS Storage Gateway Key Features" class="imageaws1">
+                <p>Volume Gateway offers block storage volumes for your applications via the iSCSI protocol. These volumes can be backed up asynchronously as snapshots, which are then stored in the cloud as Amazon EBS snapshots. Backups of on-premises Volume Gateway volumes can be done through the service's native snapshot scheduler or the AWS Backup service, with backups stored as Amazon EBS snapshots in AWS. These are incremental backups that only capture changed blocks, and the storage for these snapshots is compressed to reduce charges.</p>
+                <p>Many customers opt for Volume Gateway for backing up local applications, disaster recovery through EBS Snapshots, or Cached Volume Clones. The integration of Volume Gateway with AWS Backup allows the protection of on-premises applications using Storage Gateway volumes. AWS Backup facilitates the backup and restoration of both cached and stored volumes. Combining AWS Backup with Volume Gateway streamlines backup management, decreases operational workload, and aids in fulfilling compliance obligations.</p>
+
+                <h2>Storage Gateway Deployment Options</h2>
+                
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/QaCfOatTIDA?si=l_n7i83iHlrI4GbE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <p>AWS Storage Gateway is a hybrid cloud service that is fully managed, encompassing both cloud and on-premises components. It offers flexible deployment options to meet your infrastructure needs: as a virtual machine on VMware ESXi, Microsoft Hyper-V, or Linux KVM; as an on-premises hardware appliance; as a VM in VMware Cloud on AWS; or as an AMI on Amazon EC2.</p>
+                <p>The service provides public, Amazon VPC, and FIPS endpoints, allowing you to deploy and connect your gateway to Storage Gateway in a way that aligns with your networking and security preferences. Connections to the service can be made via the public internet or AWS Direct Connect.</p>
+                `
+            },
+            'notes': {
+                title: 'Notes',
+                prev: 'AWS-storage-gateway',
+                content: `
+                    <a href="#" class="back-button" data-page="home">Back to Home</a>
+                    <h1>Notes</h1>
+                    <p>Here you can view and open all files stored in your Google Drive.</p>
+                    <div class="notes-container">
+                        <div class="note-item">
+                            <h3>Project Ideas</h3>
+                            <p>Last modified: 2023-05-15</p>
+                        </div>
+                        <div class="note-item">
+                            <h3>Meeting Minutes</h3>
+                            <p>Last modified: 2023-05-14</p>
+                        </div>
+                        <div class="note-item">
+                            <h3>Python Cheat Sheet</h3>
+                            <p>Last modified: 2023-05-13</p>
+                        </div>
+                        <div class="note-item">
+                            <h3>To-Do List</h3>
+                            <p>Last modified: 2023-05-12</p>
+                        </div>
+                    </div>
+                `
+            }
+        };
+        pages['notes'] = {
+            title: 'Google Drive',
+            prev: 'use-cases',
+            content: `
+                <a href="#" class="back-button" data-page="home">Back to Home</a>
+                <h1>Google Drive</h1>
+                <div class="drive-container">
+                    <div class="drive-header">
+                        <p>Access and manage your files stored in Google Drive.</p>
+                        <button class="upload-btn">Upload File</button>
+                    </div>
+                    <div class="folder-structure">
+                        <div class="folder">
+                            <div class="folder-name">📁 My Projects</div>
+                            <div class="folder-content">
+                                <div class="folder">
+                                    <div class="folder-name">📁 Python</div>
+                                    <div class="folder-content">
+                                        <div>📄 hello_world.py</div>
+                                        <div>📄 data_analysis.ipynb</div>
+                                    </div>
+                                </div>
+                                <div>📄 project_ideas.txt</div>
+                            </div>
+                        </div>
+                        <div class="folder">
+                            <div class="folder-name">📁 Documents</div>
+                            <div class="folder-content">
+                                <div>📄 resume.pdf</div>
+                                <div>📄 meeting_notes.docx</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="file-list">
+                        <div class="file-item">
+                            <div class="file-icon">📄</div>
+                            <div class="file-name">hello_world.py</div>
+                            <div class="file-info">Python • 1 KB</div>
+                        </div>
+                        <div class="file-item">
+                            <div class="file-icon">📊</div>
+                            <div class="file-name">data_analysis.ipynb</div>
+                            <div class="file-info">Jupyter Notebook • 2.5 MB</div>
+                        </div>
+                        <div class="file-item">
+                            <div class="file-icon">📝</div>
+                            <div class="file-name">project_ideas.txt</div>
+                            <div class="file-info">Text • 4 KB</div>
+                        </div>
+                        <div class="file-item">
+                            <div class="file-icon">📄</div>
+                            <div class="file-name">resume.pdf</div>
+                            <div class="file-info">PDF • 500 KB</div>
+                        </div>
+                        <div class="file-item">
+                            <div class="file-icon">📄</div>
+                            <div class="file-name">meeting_notes.docx</div>
+                            <div class="file-info">Word • 250 KB</div>
+                        </div>
+                    </div>
+                </div>
+            `
+        };
+
+        function updateContent(page) {
+            content.innerHTML = pages[page].content;
+            updateBreadcrumbs(page);
+        }
+
+        function updateBreadcrumbs(page) {
+            const path = ['Home'];
+            if (page !== 'home') {
+                path.push(pages[page].title);
+            }
+            breadcrumbs.innerHTML = path.map((item, index) => 
+                index === path.length - 1 ? item : `<a href="#" data-page="${item.toLowerCase()}">${item}</a> > `
+            ).join('');
+        }
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const page = this.getAttribute('data-page');
+                updateContent(page);
+            });
+        });
+
+        breadcrumbs.addEventListener('click', function(e) {
+            if (e.target.tagName === 'A') {
+                e.preventDefault();
+                const page = e.target.getAttribute('data-page');
+                updateContent(page);
+            }
+        });
+
+        content.addEventListener('click', function(e) {
+            if (e.target.classList.contains('back-button')) {
+                e.preventDefault();
+                const page = e.target.getAttribute('data-page');
+                updateContent(page);
+            }
+        });
+        content.addEventListener('click', function(e) {
+            if (e.target.classList.contains('folder-name')) {
+                e.target.parentElement.classList.toggle('open');
+            }
+        });
+
+        // Initialize with home page
+        updateContent('home');
+
+        // Refresh page when clicking on Python Docs text
+        document.getElementById('refresh-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.reload();
+        });
+
+        const operators = [
+            { symbol: '+', name: 'Addition', operation: (x, y) => x + y },
+            { symbol: '-', name: 'Subtraction', operation: (x, y) => x - y },
+            { symbol: '*', name: 'Multiplication', operation: (x, y) => x * y },
+            { symbol: '/', name: 'Division', operation: (x, y) => y !== 0 ? x / y : 'Cannot divide by zero' },
+            { symbol: '%', name: 'Modulus', operation: (x, y) => y !== 0 ? x % y : 'Cannot divide by zero' },
+            { symbol: '**', name: 'Exponentiation', operation: (x, y) => x ** y },
+            { symbol: '//', name: 'Floor division', operation: (x, y) => y !== 0 ? Math.floor(x / y) : 'Cannot divide by zero' }
+        ];
+
+        function createArithmeticTable() {
+            const tableHTML = `
+                    <div class="container">
+        <h1>Python Arithmetic Operators</h1>
+        <p>Arithmetic operators are used with numeric values to perform common mathematical operations.</p>
+                        <div class="code-example">
+        <h2>Python Arithmetic Operators Examples</h2>
+        <div class="code-block">
+           <pre><code>x = 2
+y = 4
+
+# Addition
+result = x + y  # 6
+
+# Subtraction
+result = x - y  # -2
+
+# Multiplication
+result = x * y  # 8
+
+# Division
+result = x / y  # 0.5
+
+# Modulus
+result = x % y  # 2
+
+# Exponentiation
+result = x ** y  # 16
+
+# Floor division
+result = x // y  # 0
+</div>
+</div>
+                <div class="input-group">
+                    <div>
+                        <label for="x">Value for x:</label>
+                        <input type="number" id="x" value="0">
+                    </div>
+                    <div>
+                        <label for="y">Value for y:</label>
+                        <input type="number" id="y" value="0">
+                    </div>
+                </div>
+                <table id="operatorsTable">
+                    <thead>
+                        <tr>
+                            <th>Operator</th>
+                            <th>Name</th>
+                            <th>Example</th>
+                            <th>Try it</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${operators.map(({ symbol, name }) => `
+                            <tr>
+                                <td>${symbol}</td>
+                                <td>${name}</td>
+                                <td>x ${symbol} y</td>
+                                <td><button onclick="calculate('${symbol}')">Try it →</button></td>
+                                <td id="result-${symbol}">-</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+
+            `;
+            return tableHTML;
+        }
+
+        function calculate(symbol) {
+            const x = parseFloat(document.getElementById('x').value) || 0;
+            const y = parseFloat(document.getElementById('y').value) || 0;
+            const operator = operators.find(op => op.symbol === symbol);
+            if (operator) {
+                const result = operator.operation(x, y);
+                document.getElementById(`result-${symbol}`).textContent = result;
+            }
+        }
+
+        // Modify the existing pages object to include the arithmetic table
+        pages['pythonarth'] = {
+            title: 'Python Operators',
+            prev: 'home',
+            next: 'python',
+            content: createArithmeticTable()
+        };
+    </script>
+    
+</body>
+</html>
