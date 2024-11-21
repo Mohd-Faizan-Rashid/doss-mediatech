@@ -495,11 +495,38 @@
         button:hover {
             background-color: var(--button-hover-color);
         }
-
+        #videoContainer {
+            position: relative;
+            width: 100%;
+            max-width: 640px;
+            margin: 20px auto;
+        }
+        #video, #canvas {
+            width: 100%;
+            border-radius: 8px;
+        }
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        #controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
 
     </style>
 </head>
 <body>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
+
     <nav class="navbar">
         <a href="#" class="navbar-brand" id="refresh-link">
             <img src="https://media.licdn.com/dms/image/v2/D4E0BAQHrIyFNvHS6Uw/company-logo_200_200/company-logo_200_200/0/1716388167511/doss_in_logo?e=1740009600&v=beta&t=uHuD0vAGPG1gei7bbekzuvDYJOidBKPA684fG6BC-jc" alt="" class="navbar-logo">
@@ -532,7 +559,7 @@
             <li><a href="#" data-page="python">python day 1</a></li>
             <li><a href="#" data-page="python2">python day 2</a></li>
             <li><a href="#" data-page="AWS-storage-gateway">AWS storage gateway</a></li>
-            <li><a href="#" data-page="notes">Notes</a></li>
+            <li><a href="#" data-page="face-hand-detection">face and hand detection</a></li>
         </ul>
     </div>
 
@@ -1047,8 +1074,8 @@ print(list1)        # Output: [123, '123', 1]</code></pre>
             
             'AWS-storage-gateway': {
                 title: 'AWS-storage-gateway',
-                prev: 'getting-started',
-                next: 'notes',
+                prev: 'python2',
+                next: 'face-hand-detections',
                 content: `
 
                 <h1>Introducing AWS Storage Gateway</h1>
@@ -1101,97 +1128,8 @@ print(list1)        # Output: [123, '123', 1]</code></pre>
                 <p>The service provides public, Amazon VPC, and FIPS endpoints, allowing you to deploy and connect your gateway to Storage Gateway in a way that aligns with your networking and security preferences. Connections to the service can be made via the public internet or AWS Direct Connect.</p>
                 `
             },
-            'notes': {
-                title: 'Notes',
-                prev: 'AWS-storage-gateway',
-                content: `
-                    <a href="#" class="back-button" data-page="home">Back to Home</a>
-                    <h1>Notes</h1>
-                    <p>Here you can view and open all files stored in your Google Drive.</p>
-                    <div class="notes-container">
-                        <div class="note-item">
-                            <h3>Project Ideas</h3>
-                            <p>Last modified: 2023-05-15</p>
-                        </div>
-                        <div class="note-item">
-                            <h3>Meeting Minutes</h3>
-                            <p>Last modified: 2023-05-14</p>
-                        </div>
-                        <div class="note-item">
-                            <h3>Python Cheat Sheet</h3>
-                            <p>Last modified: 2023-05-13</p>
-                        </div>
-                        <div class="note-item">
-                            <h3>To-Do List</h3>
-                            <p>Last modified: 2023-05-12</p>
-                        </div>
-                    </div>
-                `
-            }
         };
-        pages['notes'] = {
-            title: 'Google Drive',
-            prev: 'use-cases',
-            content: `
-                <a href="#" class="back-button" data-page="home">Back to Home</a>
-                <h1>Google Drive</h1>
-                <div class="drive-container">
-                    <div class="drive-header">
-                        <p>Access and manage your files stored in Google Drive.</p>
-                        <button class="upload-btn">Upload File</button>
-                    </div>
-                    <div class="folder-structure">
-                        <div class="folder">
-                            <div class="folder-name">📁 My Projects</div>
-                            <div class="folder-content">
-                                <div class="folder">
-                                    <div class="folder-name">📁 Python</div>
-                                    <div class="folder-content">
-                                        <div>📄 hello_world.py</div>
-                                        <div>📄 data_analysis.ipynb</div>
-                                    </div>
-                                </div>
-                                <div>📄 project_ideas.txt</div>
-                            </div>
-                        </div>
-                        <div class="folder">
-                            <div class="folder-name">📁 Documents</div>
-                            <div class="folder-content">
-                                <div>📄 resume.pdf</div>
-                                <div>📄 meeting_notes.docx</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="file-list">
-                        <div class="file-item">
-                            <div class="file-icon">📄</div>
-                            <div class="file-name">hello_world.py</div>
-                            <div class="file-info">Python • 1 KB</div>
-                        </div>
-                        <div class="file-item">
-                            <div class="file-icon">📊</div>
-                            <div class="file-name">data_analysis.ipynb</div>
-                            <div class="file-info">Jupyter Notebook • 2.5 MB</div>
-                        </div>
-                        <div class="file-item">
-                            <div class="file-icon">📝</div>
-                            <div class="file-name">project_ideas.txt</div>
-                            <div class="file-info">Text • 4 KB</div>
-                        </div>
-                        <div class="file-item">
-                            <div class="file-icon">📄</div>
-                            <div class="file-name">resume.pdf</div>
-                            <div class="file-info">PDF • 500 KB</div>
-                        </div>
-                        <div class="file-item">
-                            <div class="file-icon">📄</div>
-                            <div class="file-name">meeting_notes.docx</div>
-                            <div class="file-info">Word • 250 KB</div>
-                        </div>
-                    </div>
-                </div>
-            `
-        };
+        
 
         function updateContent(page) {
             content.innerHTML = pages[page].content;
@@ -1342,6 +1280,129 @@ result = x // y  # 0
             prev: 'home',
             next: 'python',
             content: createArithmeticTable()
+        };
+                // Add new page for face and hand detection
+                pages['face-hand-detection'] = {
+            title: 'Face and Hand Detection',
+            prev: 'AWS-storage-gateway',
+            content: `
+                <h1>Face and Hand Detection</h1>
+                <p>This page demonstrates real-time face and hand detection using your camera.</p>
+                <div id="controls">
+                    <button id="startButton">Start Detection</button>
+                    <button id="stopButton" disabled>Stop Detection</button>
+                </div>
+                <div id="videoContainer">
+                    <video id="video" width="640" height="480" autoplay playsinline></video>
+                    <canvas id="canvas" width="640" height="480"></canvas>
+                </div>
+                <h1>hand dectecton method</h1>
+                <img src="https://media.geeksforgeeks.org/wp-content/uploads/20210826010442/handlandmark-300x105.png" alt="AWS Storage Gateway Key Features">
+                <h1>face dectecton method</h1>
+                <img src="https://media.geeksforgeeks.org/wp-content/uploads/20210826010550/facelandmark-300x229.png" alt="AWS Storage Gateway Key Features">
+
+            `
+        };
+
+
+
+        // Face and hand detection functionality
+        function initFaceHandDetection() {
+            const videoElement = document.getElementById('video');
+            const canvasElement = document.getElementById('canvas');
+            const canvasCtx = canvasElement.getContext('2d');
+            const startButton = document.getElementById('startButton');
+            const stopButton = document.getElementById('stopButton');
+
+            let faceMesh, hands, camera;
+
+            function onResults(results) {
+                canvasCtx.save();
+                canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+                canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
+
+                if (results.multiFaceLandmarks) {
+                    for (const landmarks of results.multiFaceLandmarks) {
+                        drawConnectors(canvasCtx, landmarks, FACEMESH_TESSELATION, { color: '#C0C0C070', lineWidth: 1 });
+                        drawConnectors(canvasCtx, landmarks, FACEMESH_RIGHT_EYE, { color: '#FF3030' });
+                        drawConnectors(canvasCtx, landmarks, FACEMESH_RIGHT_EYEBROW, { color: '#FF3030' });
+                        drawConnectors(canvasCtx, landmarks, FACEMESH_LEFT_EYE, { color: '#30FF30' });
+                        drawConnectors(canvasCtx, landmarks, FACEMESH_LEFT_EYEBROW, { color: '#30FF30' });
+                        drawConnectors(canvasCtx, landmarks, FACEMESH_FACE_OVAL, { color: '#E0E0E0' });
+                        drawConnectors(canvasCtx, landmarks, FACEMESH_LIPS, { color: '#E0E0E0' });
+                    }
+                }
+
+                if (results.multiHandLandmarks) {
+                    for (const landmarks of results.multiHandLandmarks) {
+                        drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, { color: '#00FF00', lineWidth: 5 });
+                        drawLandmarks(canvasCtx, landmarks, { color: '#FF0000', lineWidth: 2 });
+                    }
+                }
+
+                canvasCtx.restore();
+            }
+
+            function startDetection() {
+                faceMesh = new FaceMesh({
+                    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
+                });
+                faceMesh.setOptions({
+                    maxNumFaces: 1,
+                    refineLandmarks: true,
+                    minDetectionConfidence: 0.5,
+                    minTrackingConfidence: 0.5
+                });
+                faceMesh.onResults(onResults);
+
+                hands = new Hands({
+                    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+                });
+                hands.setOptions({
+                    maxNumHands: 2,
+                    modelComplexity: 1,
+                    minDetectionConfidence: 0.5,
+                    minTrackingConfidence: 0.5
+                });
+                hands.onResults(onResults);
+
+                camera = new Camera(videoElement, {
+                    onFrame: async () => {
+                        await faceMesh.send({image: videoElement});
+                        await hands.send({image: videoElement});
+                    },
+                    width: 640,
+                    height: 480
+                });
+                camera.start();
+
+                startButton.disabled = true;
+                stopButton.disabled = false;
+            }
+
+            function stopDetection() {
+                if (camera) {
+                    camera.stop();
+                }
+                if (videoElement.srcObject) {
+                    videoElement.srcObject.getTracks().forEach(track => track.stop());
+                }
+                canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+                startButton.disabled = false;
+                stopButton.disabled = true;
+            }
+
+            startButton.addEventListener('click', startDetection);
+            stopButton.addEventListener('click', stopDetection);
+        }
+
+        // Modify the updateContent function to initialize face and hand detection
+        const originalUpdateContent = updateContent;
+        updateContent = function(page) {
+            originalUpdateContent(page);
+            if (page === 'face-hand-detection') {
+                setTimeout(initFaceHandDetection, 0);
+            }
         };
     </script>
     
