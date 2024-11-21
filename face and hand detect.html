@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Face and Hand Detection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --background-color: #f5f6fa;
+            --text-color: #34495e;
+            --border-radius: 8px;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .controls {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        select, input, button {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        #videoContainer {
+            position: relative;
+            width: 100%;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        #video {
+            width: 100%;
+            border-radius: var(--border-radius);
+            display: block;
+        }
+
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: var(--border-radius);
+        }
+
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Advanced Face and Hand Detection</h1>
+        <div class="controls">
+            <label for="sourceSelect">Camera Source:</label>
+            <select id="sourceSelect">
+                <option value="pc">PC Camera</option>
+                <option value="camera1">Camera (1)</option>
+                <option value="usb">USB Camera</option>
+                <option value="ip">IP Camera</option>
+                <option value="droidcam">DroidCam</option>
+            </select>
+            <div id="ipAddressContainer" style="display: none;">
+                <label for="ipAddress">IP Address:</label>
+                <input type="text" id="ipAddress" placeholder="Enter IP address or URL">
+            </div>
+            <button id="connectButton">Connect</button>
+        </div>
+        <div id="videoContainer">
+            <video id="video" width="640" height="480" autoplay playsinline></video>
+            <canvas id="canvas" width="640" height="480"></canvas>
+        </div>
+    </div>
+    <div id="loading" class="loading" style="display: none;">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
+
+    <script>
+        const videoElement = document.getElementById('video');
+        const canvasElement = document.getElementById('canvas');
+        const canvasCtx = canvasElement.getContext('2d');
+        const sourceSelect = document.getElementById('sourceSelect');
+        const ipAddressContainer = document.getElementById('ipAddressContainer');
+        const ipAddressInput = document.getElementById('ipAddress');
+        const connectButton = document.getElementById('connectButton');
+        const loadingElement = document.getElementById('loading');
+
+        let faceMesh;
+        let hands;
+        let camera;
+
+        function showLoading() {
+            loadingElement.style.display = 'flex';
+        }
+
+        function hideLoading() {
+            loadingElement.style.display = 'none';
+        }
+
+        function onResults(results) {
+            canvasCtx.save();
+            canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+            canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
+
+            if (results.multiFaceLandmarks) {
+                for (const landmarks of results.multiFaceLandmarks) {
+                    drawConnectors(canvasCtx, landmarks, FACEMESH_TESSELATION, { color: '#C0C0C070', lineWidth: 1 });
+                    drawConnectors(canvasCtx, landmarks, FACEMESH_RIGHT_EYE, { color: '#FF3030' });
+                    drawConnectors(canvasCtx, landmarks, FACEMESH_RIGHT_EYEBROW, { color: '#FF3030' });
+                    drawConnectors(canvasCtx, landmarks, FACEMESH_LEFT_EYE, { color: '#30FF30' });
+                    drawConnectors(canvasCtx, landmarks, FACEMESH_LEFT_EYEBROW, { color: '#30FF30' });
+                    drawConnectors(canvasCtx, landmarks, FACEMESH_FACE_OVAL, { color: '#E0E0E0' });
+                    drawConnectors(canvasCtx, landmarks, FACEMESH_LIPS, { color: '#E0E0E0' });
+                }
+            }
+
+            if (results.multiHandLandmarks) {
+                for (const landmarks of results.multiHandLandmarks) {
+                    drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, { color: '#00FF00', lineWidth: 5 });
+                    drawLandmarks(canvasCtx, landmarks, { color: '#FF0000', lineWidth: 2 });
+                }
+            }
+
+            canvasCtx.restore();
+        }
+
+        async function initializeDetectors() {
+            showLoading();
+
+            faceMesh = new FaceMesh({
+                locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
+            });
+            await faceMesh.initialize();
+            faceMesh.setOptions({
+                maxNumFaces: 1,
+                refineLandmarks: true,
+                minDetectionConfidence: 0.5,
+                minTrackingConfidence: 0.5
+            });
+            faceMesh.onResults(onResults);
+
+            hands = new Hands({
+                locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+            });
+            await hands.initialize();
+            hands.setOptions({
+                maxNumHands: 2,
+                modelComplexity: 1,
+                minDetectionConfidence: 0.5,
+                minTrackingConfidence: 0.5
+            });
+            hands.onResults(onResults);
+
+            hideLoading();
+        }
+
+        async function startDetection(stream) {
+            videoElement.srcObject = stream;
+            await videoElement.play();
+
+            const sendToDetectors = async () => {
+                if (videoElement.videoWidth) {
+                    canvasElement.width = videoElement.videoWidth;
+                    canvasElement.height = videoElement.videoHeight;
+                    await faceMesh.send({image: videoElement});
+                    await hands.send({image: videoElement});
+                }
+                requestAnimationFrame(sendToDetectors);
+            };
+
+            requestAnimationFrame(sendToDetectors);
+        }
+
+        sourceSelect.addEventListener('change', () => {
+            const source = sourceSelect.value;
+            ipAddressContainer.style.display = (source === 'ip' || source === 'droidcam') ? 'block' : 'none';
+        });
+
+        connectButton.addEventListener('click', async () => {
+            const source = sourceSelect.value;
+            let stream;
+
+            showLoading();
+
+            try {
+                switch (source) {
+                    case 'pc':
+                        stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                        break;
+                    case 'camera1':
+                        const devices = await navigator.mediaDevices.enumerateDevices();
+                        const cameras = devices.filter(device => device.kind === 'videoinput');
+                        if (cameras.length > 1) {
+                            stream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: cameras[1].deviceId } } });
+                        } else {
+                            throw new Error('Secondary camera not found');
+                        }
+                        break;
+                    case 'usb':
+                        const usbDevices = await navigator.mediaDevices.enumerateDevices();
+                        const usbCamera = usbDevices.find(device => device.kind === 'videoinput' && device.label.toLowerCase().includes('usb'));
+                        if (usbCamera) {
+                            stream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: usbCamera.deviceId } } });
+                        } else {
+                            throw new Error('USB camera not found');
+                        }
+                        break;
+                    case 'ip':
+                    case 'droidcam':
+                        const ipAddress = ipAddressInput.value;
+                        if (!ipAddress) throw new Error('IP address is required for IP camera or DroidCam');
+                        const url = source === 'ip' ? ipAddress : `http://${ipAddress}/video`;
+                        videoElement.src = url;
+                        await new Promise((resolve) => {
+                            videoElement.onloadedmetadata = resolve;
+                        });
+                        stream = videoElement.captureStream();
+                        break;
+                    default:
+                        throw new Error('Invalid camera source');
+                }
+
+                await startDetection(stream);
+            } catch (error) {
+                console.error('Error connecting to camera:', error);
+                alert(`Failed to connect to camera: ${error.message}`);
+            } finally {
+                hideLoading();
+            }
+        });
+
+        initializeDetectors();
+    </script>
+</body>
+</html>
